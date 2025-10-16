@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- ✅ 标题改为 oAix -->
   <title>oAix</title>
-  <!-- ✅ 描述改为简洁版 -->
   <meta name="description" content="Designed by 刘晗" />
   
   <style>
@@ -58,24 +56,10 @@
       font-weight: 300;
     }
 
-    .links {
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .links a {
-      color: #00ffcc;
-      text-decoration: none;
-      font-size: 1.1rem;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-
-    .links a:hover {
-      color: #0066ff;
-      transform: translateY(-2px);
+    .signature {
+      font-size: 1.2rem;
+      color: #ddd;
+      margin-top: 1.5rem;
     }
 
     /* 彩蛋模态框 */
@@ -125,25 +109,18 @@
       h1 {
         font-size: 2.5rem;
       }
-      .tagline {
+      .tagline,
+      .signature {
         font-size: 1.1rem;
-      }
-      .links {
-        gap: 1.2rem;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>oaix</h1>
+    <h1>oAix</h1>
     <p class="tagline">Think beyond.</p>
-    <!-- ✅ 改为 Designed by 刘晗 -->
-    <p>Designed by 刘晗</p>
-    <div class="links">
-      <a href="https://github.com/haenlau" target="_blank">GitHub</a>
-      <a href="https://instagram.com/haenlau" target="_blank">Instagram</a>
-    </div>
+    <p class="signature">Designed by 刘晗</p>
   </div>
 
   <!-- 彩蛋弹窗 -->
@@ -174,8 +151,7 @@
     function randomRedirect() {
       const urls = [
         'https://github.com/haenlau',
-        'https://instagram.com/haenlau',
-        'https://oaix.cn'
+        'https://instagram.com/haenlau'
       ];
       const randomUrl = urls[Math.floor(Math.random() * urls.length)];
       window.open(randomUrl, '_blank');
