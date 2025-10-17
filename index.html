@@ -200,6 +200,33 @@
   // 页面加载完成后初始化功能
   window.onload = function() {
     let count = 0;
+    let audioContextUnlocked = false;
+    const music = document.getElementById('backgroundMusic');
+
+    // ===== 核心：用首次点击/触摸激活音频上下文 =====
+    const unlockAudio = () => {
+      if (audioContextUnlocked) return;
+      
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // 激活成功，立即暂停（不真播放）
+            music.pause();
+            music.currentTime = 0;
+            audioContextUnlocked = true;
+          })
+          .catch(err => {
+            console.warn("音频上下文激活失败（非用户直接操作）:", err);
+            // 可忽略，等待下次点击
+          });
+      }
+    };
+
+    // 绑定到首次点击或触摸（自动解锁）
+    ['touchstart', 'click'].forEach(event => {
+      document.addEventListener(event, unlockAudio, { once: true, passive: false });
+    });
 
     // 键盘事件：空格触发彩蛋
     window.addEventListener('keydown', function(e) {
@@ -226,16 +253,17 @@
     }, { passive: false });
 
     // 音乐控制
-    const music = document.getElementById('backgroundMusic');
     const musicButton = document.getElementById('musicToggle');
 
     musicButton.addEventListener('click', function () {
       if (music.paused) {
-        music.play().then(() => {
-          musicButton.textContent = '暂停';
-        }).catch(() => {
-          alert("播放失败，请重试。");
-        });
+        music.play()
+          .then(() => {
+            musicButton.textContent = '暂停';
+          })
+          .catch(() => {
+            alert("播放失败，请重试。\n请确保已点击过屏幕以启用声音。");
+          });
       } else {
         music.pause();
         musicButton.textContent = '播放';
