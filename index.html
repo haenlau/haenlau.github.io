@@ -5,224 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
-
-  <!-- 预加载霞鹜文楷字体 -->
   <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, system-ui, sans-serif;
-      background: #000000;
-      color: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .container {
-      padding: 2rem;
-      max-width: 800px;
-      animation: fadeIn 1.2s ease-out;
-      z-index: 10;
-      position: relative;
-    }
-
-    h1 {
-      font-size: clamp(2.5rem, 8vw, 6rem);
-      font-weight: 700;
-      letter-spacing: 3px;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #00ffcc, #0066ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-
-    /* 呼吸光晕动画 */
-    @keyframes breathe {
-      0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 204, 0.3); }
-      50% { text-shadow: 0 0 20px rgba(0, 255, 204, 0.6); }
-    }
-
-    h1.breathe {
-      animation: breathe 1.2s ease-in-out;
-    }
-
-    .tagline {
-      font-size: 1.4rem;
-      color: #ccc;
-      margin: 1rem 0;
-      font-weight: 300;
-      transition: color 0.6s ease, opacity 0.4s ease;
-    }
-
-    .tagline:hover {
-      color: #00ffcc;
-      text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
-      opacity: 1;
-    }
-
-    @font-face {
-      font-family: 'LXGW WenKai';
-      src: url('./fonts/LXGWWenKai-Regular.woff2') format('woff2');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    .signature {
-      font-size: 1.2rem;
-      color: #ddd;
-      margin-top: 1.5rem;
-      transition: color 0.4s ease;
-      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, sans-serif;
-      font-weight: normal;
-      letter-spacing: 1px;
-    }
-
-    .signature:hover {
-      color: #00ffcc;
-    }
-
-    /* 彩蛋：翻页动画 */
-    .easter-egg {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: #fff;
-      font-size: 1.5rem;
-      text-align: center;
-      padding: 2rem;
-      gap: 1.5rem;
-      perspective: 1000px;
-    }
-
-    .flip-panel {
-      transform-style: preserve-3d;
-      animation: flipIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    .easter-egg.closing .flip-panel {
-      animation: flipOut 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    @keyframes flipIn {
-      0% {
-        transform: rotateY(-90deg) scale(0.9);
-        opacity: 0;
-      }
-      100% {
-        transform: rotateY(0deg) scale(1);
-        opacity: 1;
-      }
-    }
-
-    @keyframes flipOut {
-      0% {
-        transform: rotateY(0deg) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: rotateY(90deg) scale(0.9);
-        opacity: 0;
-      }
-    }
-
-    .easter-egg h2,
-    .easter-egg p {
-      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, sans-serif;
-      font-weight: normal;
-    }
-
-    .easter-egg h2 {
-      font-size: 2rem;
-      margin: 0;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: normal;
-    }
-
-    .easter-egg p {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
-      color: #ccc;
-      font-weight: 300;
-    }
-
-    .easter-egg button {
-      margin-top: 0.5rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1.1rem;
-      background: #00ffcc;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 255, 204, 0.3);
-    }
-
-    .easter-egg button:hover {
-      background: #0066ff;
-      color: white;
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2.5rem;
-      }
-      .tagline,
-      .signature {
-        font-size: 1.1rem;
-      }
-      .easter-egg h2 {
-        font-size: 1.8rem;
-      }
-      .easter-egg button {
-        width: 80%;
-        padding: 0.7rem 1rem;
-      }
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--font:'LXGW WenKai','STKaiti','KaiTi','华文行楷',cursive,sans-serif}
+    body{font-family:var(--font);background:#000;color:#f5f5f5;min-height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;overflow:hidden;position:relative}
+    .container{padding:2rem;max-width:800px;animation:fadeIn 1.2s ease-out;z-index:10;position:relative}
+    h1{font-size:clamp(2.5rem,8vw,6rem);font-weight:700;letter-spacing:3px;margin-bottom:.5rem;background:linear-gradient(90deg,#00ffcc,#0066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;transition:transform .1s}
+    @keyframes breathe{0%,100%{text-shadow:0 0 8px rgba(0,255,204,.3)}50%{text-shadow:0 0 20px rgba(0,255,204,.6)}}
+    h1.breathe{animation:breathe 1.2s ease-in-out}
+    .tagline{font-size:1.4rem;color:#ccc;margin:1rem 0;font-weight:300;transition:color .6s ease,opacity .4s ease}
+    .tagline:hover{color:#00ffcc;text-shadow:0 0 8px rgba(0,255,204,.4);opacity:1}
+    @font-face{font-family:'LXGW WenKai';src:url('./fonts/LXGWWenKai-Regular.woff2') format('woff2');font-weight:normal;font-style:normal;font-display:swap}
+    .signature{font-size:1.2rem;color:#ddd;margin-top:1.5rem;transition:color .4s ease;font-family:var(--font);letter-spacing:1px}
+    .signature:hover{color:#00ffcc}
+    .easter-egg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(10px);z-index:100;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.5rem;text-align:center;padding:2rem;gap:1.5rem;perspective:1000px}
+    .flip-panel{transform-style:preserve-3d;animation:flipIn .6s cubic-bezier(.34,1.56,.64,1) forwards}
+    .easter-egg.closing .flip-panel{animation:flipOut .6s cubic-bezier(.34,1.56,.64,1) forwards}
+    @keyframes flipIn{0%{transform:rotateY(-90deg) scale(.9);opacity:0}100%{transform:rotateY(0) scale(1);opacity:1}}
+    @keyframes flipOut{0%{transform:rotateY(0) scale(1);opacity:1}100%{transform:rotateY(90deg) scale(.9);opacity:0}}
+    .easter-egg h2,.easter-egg p{font-family:var(--font);font-weight:normal}
+    .easter-egg h2{font-size:2rem;margin:0;color:#fff;display:flex;align-items:center;gap:.5rem}
+    .easter-egg p{font-size:1.2rem;margin:.5rem 0;color:#ccc;font-weight:300}
+    .easter-egg button{margin-top:.5rem;padding:.8rem 1.5rem;font-size:1.1rem;background:#00ffcc;color:#000;border:none;border-radius:8px;cursor:pointer;transition:all .2s ease;box-shadow:0 2px 8px rgba(0,255,204,.3)}
+    .easter-egg button:hover{background:#0066ff;color:#fff;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,102,255,.4)}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @media (max-width:600px){
+      h1{font-size:2.5rem}
+      .tagline,.signature{font-size:1.1rem}
+      .easter-egg h2{font-size:1.8rem}
+      .easter-egg button{width:80%;padding:.7rem 1rem}
     }
   </style>
 </head>
 <body>
-
 <div class="container">
   <h1 id="logo">oAix</h1>
   <p class="tagline">Where silence speaks</p>
   <p class="signature">Designed by haen</p>
 </div>
-
 <div class="easter-egg" id="egg">
   <div class="flip-panel">
     <h2 id="eggTitle">You heard the silence</h2>
@@ -232,143 +53,118 @@
   </div>
 </div>
 
-<audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
+<audio id="backgroundMusic" preload="auto">
+  <source src="files/music.aac" type="audio/mp4">
+  Your browser does not support audio
+</audio>
 
 <script>
-  window.onload = function() {
-    let count = 0;
-    let audioContextUnlocked = false;
-    const music = document.getElementById('backgroundMusic');
-    const musicButton = document.getElementById('musicToggle');
-    const egg = document.getElementById('egg');
-    const eggTitle = document.getElementById('eggTitle');
-    const eggDesc = document.getElementById('eggDesc');
+const originalVolume = 0.7;
+let tapCount = 0;
+let audioUnlocked = false;
+let isFading = false;
 
-    // 设置默认音量
-    const originalVolume = 0.7;
-    music.volume = originalVolume;
+const music = document.getElementById('backgroundMusic');
+const btnMusic = document.getElementById('musicToggle');
+const egg = document.getElementById('egg');
+const title = document.getElementById('eggTitle');
+const desc = document.getElementById('eggDesc');
 
-    // === 巧思：每小时重置“初次见面”状态 ===
-    const VISIT_RESET_INTERVAL = 60 * 60 * 1000; // 1 小时
-    const lastVisit = localStorage.getItem('lastVisit');
-    const now = Date.now();
-    let isFirstInHour = true;
+btnMusic.textContent = 'Play';
 
-    if (lastVisit) {
-      const elapsed = now - parseInt(lastVisit, 10);
-      if (elapsed < VISIT_RESET_INTERVAL) {
-        isFirstInHour = false;
-      }
-    }
-    localStorage.setItem('lastVisit', now.toString());
+const now = Date.now();
+const last = localStorage.getItem('lastVisit');
+if (last && (now - Number(last)) < 3600000) {
+  title.textContent = "You're back.";
+  desc.textContent = "The silence missed you.";
+}
+localStorage.setItem('lastVisit', now.toString());
 
-    if (isFirstInHour) {
-      eggTitle.textContent = "You heard the silence.";
-      eggDesc.textContent = "And it spoke to you.";
+document.addEventListener('click', e => {
+  if (e.target.closest('.easter-egg')) return;
+  tapCount++;
+  if (tapCount === 3) {
+    egg.style.display = 'flex';
+    egg.classList.remove('closing');
+    tapCount = 0;
+  } else if (tapCount > 3) tapCount = 0;
+});
+
+btnMusic.addEventListener('click', () => {
+  if (!audioUnlocked) {
+    const p = music.play();
+    if (p) p.then(() => {
+      audioUnlocked = true;
+      music.volume = originalVolume;
+      btnMusic.textContent = 'Pause';
+    }).catch(() => alert('Please interact first to enable audio.'));
+  } else {
+    if (music.paused) {
+      music.play();
+      btnMusic.textContent = 'Pause';
     } else {
-      eggTitle.textContent = "You're back.";
-      eggDesc.textContent = "The silence missed you.";
+      music.pause();
+      btnMusic.textContent = 'Play';
     }
+  }
+});
 
-    // === 交互事件 ===
-    const triggerEvent = 'onpointerup' in window ? 'pointerup' : ('ontouchstart' in window ? 'touchstart' : 'click');
-
-    const handleTripleTap = (e) => {
-      if (e.target.closest('.easter-egg')) return;
-      count++;
-      if (count === 3) {
-        egg.style.display = 'flex';
-        void egg.offsetWidth;
-        egg.classList.remove('closing');
-        count = 0;
-      } else if (count > 3) {
-        count = 0;
-      }
-    };
-
-    document.addEventListener(triggerEvent, handleTripleTap, { passive: false });
-
-    // === 音乐控制 ===
-    musicButton.addEventListener('click', function () {
-      if (!audioContextUnlocked) {
-        const playPromise = music.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              audioContextUnlocked = true;
-              musicButton.textContent = 'Pause';
-            })
-            .catch(() => {
-              console.warn("Audio playback was blocked. Please interact with the page first.");
-            });
-        }
-      } else {
-        if (music.paused) {
-          music.play();
-          musicButton.textContent = 'Pause';
-        } else {
-          music.pause();
-          musicButton.textContent = 'Play';
-        }
-      }
+document.addEventListener('visibilitychange', () => {
+  if (isFading) return;
+  if (document.hidden && !music.paused) {
+    isFading = true;
+    fadeOut(music, () => {
+      music.pause();
+      isFading = false;
     });
+  } else if (!document.hidden && audioUnlocked && music.paused) {
+    isFading = true;
+    music.play();
+    fadeIn(music, originalVolume, () => isFading = false);
+  }
+});
 
-    // === 页面切换时音乐淡入淡出 ===
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && !music.paused) {
-        let vol = music.volume;
-        const fadeOut = setInterval(() => {
-          vol -= 0.05;
-          if (vol <= 0) {
-            vol = 0;
-            clearInterval(fadeOut);
-          }
-          music.volume = vol;
-        }, 100);
-      } else if (!document.hidden && !music.paused) {
-        let vol = 0;
-        const fadeIn = setInterval(() => {
-          vol += 0.05;
-          if (vol >= originalVolume) {
-            vol = originalVolume;
-            clearInterval(fadeIn);
-          }
-          music.volume = vol;
-        }, 100);
-      }
+logo.addEventListener('click', () => {
+  logo.classList.remove('breathe');
+  requestAnimationFrame(() => logo.classList.add('breathe'));
+});
+
+closeEgg.addEventListener('click', () => {
+  egg.classList.add('closing');
+  if (!music.paused) {
+    fadeOut(music, () => {
+      music.pause();
+      btnMusic.textContent = 'Play';
     });
+  }
+  setTimeout(() => {
+    egg.style.display = 'none';
+    music.volume = originalVolume;
+  }, 600);
+});
 
-    // === 呼吸光晕 ===
-    document.getElementById('logo').addEventListener('click', function() {
-      this.classList.remove('breathe');
-      void this.offsetWidth;
-      this.classList.add('breathe');
-    });
-
-    // === 关闭彩蛋（带音乐渐弱）===
-    document.getElementById('closeEgg').addEventListener('click', function() {
-      egg.classList.add('closing');
-      
-      if (!music.paused) {
-        let vol = music.volume;
-        const fadeOut = setInterval(() => {
-          vol -= 0.05;
-          if (vol <= 0) {
-            vol = 0;
-            music.pause();
-            musicButton.textContent = 'Play';
-            clearInterval(fadeOut);
-          }
-          music.volume = vol;
-        }, 80);
-      }
-
-      setTimeout(() => {
-        egg.style.display = 'none';
-        music.volume = originalVolume;
-      }, 600);
-    });
+function fadeOut(audio, onEnd) {
+  let vol = audio.volume;
+  const step = () => {
+    vol = Math.max(0, vol - 0.05);
+    audio.volume = vol;
+    if (vol > 0) requestAnimationFrame(step);
+    else onEnd?.();
   };
+  requestAnimationFrame(step);
+}
+
+function fadeIn(audio, targetVol, onEnd) {
+  audio.volume = 0;
+  let vol = 0;
+  const step = () => {
+    vol = Math.min(targetVol, vol + 0.05);
+    audio.volume = vol;
+    if (vol < targetVol) requestAnimationFrame(step);
+    else onEnd?.();
+  };
+  requestAnimationFrame(step);
+}
 </script>
 </body>
 </html>
