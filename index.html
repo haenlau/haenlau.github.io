@@ -6,6 +6,7 @@
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
 
+  <!-- 预加载霞鹜文楷字体 -->
   <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <style>
@@ -98,6 +99,7 @@
       color: #00ffcc;
     }
 
+    /* 彩蛋：翻页动画 */
     .easter-egg {
       display: none;
       position: fixed;
@@ -220,14 +222,14 @@
 
 <div class="container">
   <h1 id="logo">oAix</h1>
-  <p class="tagline">Think beyond.</p>
+  <p class="tagline">Where silence speaks</p>
   <p class="signature">Designed by haen</p>
 </div>
 
 <div class="easter-egg" id="egg">
   <div class="flip-panel">
-    <h2>You found a secret!</h2>
-    <p>Easter egg unlocked.</p>
+    <h2>You heard the silence.</h2>
+    <p>And it spoke to you.</p>
     <button id="musicToggle">Play</button>
     <button id="closeEgg">Close</button>
   </div>
@@ -250,7 +252,7 @@
       count++;
       if (count === 3) {
         egg.style.display = 'flex';
-        void egg.offsetWidth;
+        void egg.offsetWidth; // 强制重排以触发动画
         egg.classList.remove('closing');
         count = 0;
       } else if (count > 3) {
