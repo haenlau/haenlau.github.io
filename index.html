@@ -53,10 +53,8 @@
   </div>
 </div>
 
-<audio id="backgroundMusic" preload="auto">
-  <source src="files/music.aac" type="audio/mp4">
-  Your browser does not support audio
-</audio>
+<!-- 使用 MP3，单文件更简洁 -->
+<audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
 <script>
 const originalVolume = 0.7;
@@ -75,8 +73,8 @@ btnMusic.textContent = 'Play';
 const now = Date.now();
 const last = localStorage.getItem('lastVisit');
 if (last && (now - Number(last)) < 3600000) {
-  title.textContent = "You're back";
-  desc.textContent = "The silence missed you";
+  title.textContent = "You're back.";
+  desc.textContent = "The silence missed you.";
 }
 localStorage.setItem('lastVisit', now.toString());
 
