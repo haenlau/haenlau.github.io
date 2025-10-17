@@ -6,6 +6,9 @@
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
   
+  <!-- 预加载关键字体，提升加载速度 -->
+  <link rel="preload" href="./fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin>
+
   <style>
     * {
       margin: 0;
@@ -79,12 +82,22 @@
       opacity: 1;
     }
 
+    /* 字体引入：霞鹜文楷 */
+    @font-face {
+      font-family: 'LXGW WenKai';
+      src: url('./fonts/LXGWWenKai-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap; /* 允许字体替换，避免文本不可见 */
+    }
+
     .signature {
       font-size: 1.2rem;
       color: #ddd;
       margin-top: 1.5rem;
       transition: color 0.4s ease;
-      font-family: "华文行楷", "STXingkai", "STXingkaiTC", "LiHei Pro", "LiSu", cursive;
+      /* 优先使用 Web 字体，再 fallback 到系统字体 */
+      font-family: 'LXGW WenKai', '华文行楷', 'STXingkai', 'STXingkaiTC', 'LiHei Pro', 'LiSu', cursive, sans-serif;
       font-weight: normal;
       letter-spacing: 1px;
     }
