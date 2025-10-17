@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
 
-  <!-- 预加载关键字体 -->
   <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <style>
@@ -65,7 +64,7 @@
 
     .tagline {
       font-size: 1.4rem;
-      color: #ccc; /* 提升对比度 */
+      color: #ccc;
       margin: 1rem 0;
       font-weight: 300;
       transition: color 0.6s ease, opacity 0.4s ease;
@@ -117,6 +116,38 @@
       text-align: center;
       padding: 2rem;
       gap: 1.5rem;
+      perspective: 1000px;
+    }
+
+    .flip-panel {
+      transform-style: preserve-3d;
+      animation: flipIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .easter-egg.closing .flip-panel {
+      animation: flipOut 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes flipIn {
+      0% {
+        transform: rotateY(-90deg) scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes flipOut {
+      0% {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: rotateY(90deg) scale(0.9);
+        opacity: 0;
+      }
     }
 
     .easter-egg h2,
@@ -194,10 +225,12 @@
 </div>
 
 <div class="easter-egg" id="egg">
-  <h2>你发现了隐藏内容</h2>
-  <p>触发了彩蛋</p>
-  <button id="musicToggle">播放</button>
-  <button id="closeEgg">关闭</button>
+  <div class="flip-panel">
+    <h2>You found a secret!</h2>
+    <p>Easter egg unlocked.</p>
+    <button id="musicToggle">Play</button>
+    <button id="closeEgg">Close</button>
+  </div>
 </div>
 
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
@@ -208,15 +241,17 @@
     let audioContextUnlocked = false;
     const music = document.getElementById('backgroundMusic');
     const musicButton = document.getElementById('musicToggle');
+    const egg = document.getElementById('egg');
 
-    // 统一使用 pointerup（兼容触屏和鼠标）
     const triggerEvent = 'onpointerup' in window ? 'pointerup' : ('ontouchstart' in window ? 'touchstart' : 'click');
 
     const handleTripleTap = (e) => {
       if (e.target.closest('.easter-egg')) return;
       count++;
       if (count === 3) {
-        document.getElementById('egg').style.display = 'flex';
+        egg.style.display = 'flex';
+        void egg.offsetWidth;
+        egg.classList.remove('closing');
         count = 0;
       } else if (count > 3) {
         count = 0;
@@ -225,7 +260,6 @@
 
     document.addEventListener(triggerEvent, handleTripleTap, { passive: false });
 
-    // 音乐控制
     musicButton.addEventListener('click', function () {
       if (!audioContextUnlocked) {
         const playPromise = music.play();
@@ -233,33 +267,34 @@
           playPromise
             .then(() => {
               audioContextUnlocked = true;
-              musicButton.textContent = '暂停';
+              musicButton.textContent = 'Pause';
             })
             .catch(() => {
-              console.warn("音频播放被阻止，请确保已与页面交互。");
+              console.warn("Audio playback was blocked. Please interact with the page first.");
             });
         }
       } else {
         if (music.paused) {
           music.play();
-          musicButton.textContent = '暂停';
+          musicButton.textContent = 'Pause';
         } else {
           music.pause();
-          musicButton.textContent = '播放';
+          musicButton.textContent = 'Play';
         }
       }
     });
 
-    // 关闭彩蛋
     document.getElementById('closeEgg').addEventListener('click', function() {
-      document.getElementById('egg').style.display = 'none';
-      if (!music.paused) {
-        music.pause();
-        musicButton.textContent = '播放';
-      }
+      egg.classList.add('closing');
+      setTimeout(() => {
+        egg.style.display = 'none';
+        if (!music.paused) {
+          music.pause();
+          musicButton.textContent = 'Play';
+        }
+      }, 600);
     });
 
-    // Logo 跳动动画
     document.getElementById('logo').addEventListener('click', function() {
       this.classList.add('jump');
       setTimeout(() => this.classList.remove('jump'), 500);
