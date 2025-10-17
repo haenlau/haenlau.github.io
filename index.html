@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
-  
-  <!-- 预加载关键字体，提升加载速度 -->
-  <link rel="preload" href="./fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin>
+
+  <!-- 预加载关键字体（woff2），提升加载速度 -->
+  <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <style>
     * {
@@ -18,20 +18,15 @@
 
     body {
       font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: #0a0a0a;
+      background: #000000; /* 纯黑背景 */
       color: #f5f5f5;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
-      transition: background 0.8s ease;
       overflow: hidden;
       position: relative;
-    }
-
-    body:hover {
-      background: #000a1a;
     }
 
     .container {
@@ -82,13 +77,13 @@
       opacity: 1;
     }
 
-    /* 字体引入：霞鹜文楷 */
+    /* 字体引入：霞鹜文楷（使用本地 woff2） */
     @font-face {
       font-family: 'LXGW WenKai';
-      src: url('./fonts/LXGWWenKai-Regular.ttf') format('truetype');
+      src: url('./fonts/LXGWWenKai-Regular.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
-      font-display: swap; /* 允许字体替换，避免文本不可见 */
+      font-display: swap;
     }
 
     .signature {
@@ -96,7 +91,6 @@
       color: #ddd;
       margin-top: 1.5rem;
       transition: color 0.4s ease;
-      /* 优先使用 Web 字体，再 fallback 到系统字体 */
       font-family: 'LXGW WenKai', '华文行楷', 'STXingkai', 'STXingkaiTC', 'LiHei Pro', 'LiSu', cursive, sans-serif;
       font-weight: normal;
       letter-spacing: 1px;
@@ -148,7 +142,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 统一提示文字，兼容 PC 和手机 */
     .space-hint {
       position: fixed;
       bottom: 16px;
@@ -165,7 +158,6 @@
       opacity: 1;
     }
 
-    /* 小屏幕适配 */
     @media (max-width: 600px) {
       h1 {
         font-size: 2.5rem;
@@ -184,8 +176,6 @@
 </head>
 <body>
 
-<canvas id="starsCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
-
 <div class="container">
   <h1 id="logo">oAix</h1>
   <p class="tagline">Think beyond.</p>
@@ -203,137 +193,15 @@
 <!-- 背景音乐 -->
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
-<!-- 提示文字：统一提示，兼容所有设备 -->
+<!-- 提示文字 -->
 <div class="space-hint">点击屏幕或敲击空格三次有惊喜</div>
 
 <script>
-  // 完整保留原始星空动画函数
-  function startStars() {
-    const canvas = document.getElementById('starsCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let mouseX = canvas.width / 2, mouseY = canvas.height / 2;
-    canvas.addEventListener('mousemove', e => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const stars = [];
-    for (let i = 0; i < 150; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5 + 0.5,
-        o: Math.random() * 0.8 + 0.2,
-        s: Math.random() * 0.5 + 0.1
-      });
-    }
-
-    const shootingStars = [];
-    const shootingStarChance = 0.003;
-    const shootingStarSpeed = 8;
-
-    function createShootingStar() {
-      const side = Math.random();
-      let x, y, angle;
-
-      if (side < 0.33) {
-        x = canvas.width + 50;
-        y = Math.random() * canvas.height * 0.7;
-        angle = Math.PI + (Math.random() - 0.5) * 0.5;
-      } else if (side < 0.66) {
-        x = Math.random() * canvas.width;
-        y = -50;
-        angle = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
-      } else {
-        x = -50;
-        y = Math.random() * canvas.height * 0.7;
-        angle = (Math.random() - 0.5) * 0.5;
-      }
-
-      return {
-        x: x,
-        y: y,
-        angle: angle,
-        length: Math.random() * 100 + 60,
-        speed: shootingStarSpeed * (0.8 + Math.random() * 0.6),
-        opacity: 1,
-        fadeSpeed: Math.random() * 0.015 + 0.005
-      };
-    }
-
-    function animate() {
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      stars.forEach(star => {
-        star.y += star.s;
-        if (star.y > canvas.height) star.y = 0;
-
-        const dx = star.x - mouseX;
-        const dy = star.y - mouseY;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const maxDist = 150;
-        let opacity = star.o;
-        if (dist < maxDist) {
-          opacity = Math.min(1, star.o + (1 - dist/maxDist) * 0.6);
-        }
-
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.fill();
-      });
-
-      if (Math.random() < shootingStarChance) {
-        shootingStars.push(createShootingStar());
-      }
-
-      for (let i = shootingStars.length - 1; i >= 0; i--) {
-        const star = shootingStars[i];
-        const endX = star.x + Math.cos(star.angle) * star.length;
-        const endY = star.y + Math.sin(star.angle) * star.length;
-        const gradient = ctx.createLinearGradient(star.x, star.y, endX, endY);
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
-        gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
-
-        ctx.beginPath();
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = gradient;
-        ctx.moveTo(star.x, star.y);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        star.x += Math.cos(star.angle) * star.speed;
-        star.y += Math.sin(star.angle) * star.speed;
-        star.opacity -= star.fadeSpeed;
-
-        if (star.opacity <= 0 || star.x < -100 || star.x > canvas.width + 100 || star.y > canvas.height + 100) {
-          shootingStars.splice(i, 1);
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-  }
-
-  // 初始化与事件绑定
+  // 页面加载完成后初始化功能
   window.onload = function() {
-    startStars(); // 星空动画已恢复
-
     let count = 0;
 
-    // 统一处理 PC 和手机
+    // 键盘事件：空格触发彩蛋
     window.addEventListener('keydown', function(e) {
       if (e.code === 'Space') {
         e.preventDefault();
@@ -347,6 +215,7 @@
       }
     });
 
+    // 触摸事件：手机端三击触发
     window.addEventListener('touchstart', function(e) {
       e.preventDefault();
       count++;
@@ -356,6 +225,7 @@
       }
     }, { passive: false });
 
+    // 音乐控制
     const music = document.getElementById('backgroundMusic');
     const musicButton = document.getElementById('musicToggle');
 
@@ -372,6 +242,7 @@
       }
     });
 
+    // 关闭彩蛋
     document.getElementById('closeEgg').addEventListener('click', function() {
       document.getElementById('egg').style.display = 'none';
       if (!music.paused) {
@@ -380,6 +251,7 @@
       }
     });
 
+    // Logo 点击跳动动画
     const logo = document.getElementById('logo');
     logo.addEventListener('click', function() {
       this.classList.add('jump');
