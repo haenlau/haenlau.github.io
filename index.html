@@ -117,24 +117,44 @@
       font-size: 1.5rem;
       text-align: center;
       padding: 2rem;
+      gap: 1.5rem;
+    }
+
+    .easter-egg h2 {
+      font-size: 2rem;
+      margin: 0;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+    }
+
+    .easter-egg p {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      color: #ccc;
+      font-weight: 300;
     }
 
     .easter-egg button {
-      margin-top: 1.5rem;
+      margin-top: 0.5rem;
       padding: 0.8rem 1.5rem;
       font-size: 1.1rem;
       background: #00ffcc;
       color: #000;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 255, 204, 0.3);
     }
 
     .easter-egg button:hover {
       background: #0066ff;
       color: white;
       transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
     }
 
     @keyframes fadeIn {
@@ -171,6 +191,13 @@
         bottom: 12px;
         right: 12px;
       }
+      .easter-egg h2 {
+        font-size: 1.8rem;
+      }
+      .easter-egg button {
+        width: 80%;
+        padding: 0.7rem 1rem;
+      }
     }
   </style>
 </head>
@@ -184,8 +211,8 @@
 
 <!-- 隐藏彩蛋 -->
 <div class="easter-egg" id="egg">
-  <h2>🎉 你发现了隐藏内容 </h2>
-  <p>触发了彩蛋！</p>
+  <h2>你发现了隐藏内容</h2>
+  <p>触发了彩蛋</p>
   <button id="musicToggle">播放</button>
   <button id="closeEgg">关闭</button>
 </div>
@@ -193,8 +220,8 @@
 <!-- 背景音乐 -->
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
-<!-- 提示文字：已修改 -->
-<div class="space-hint"> </div>
+<!-- 提示文字：暂留空 -->
+<div class="space-hint"></div>
 
 <script>
   // 页面加载完成后初始化功能
@@ -211,13 +238,12 @@
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            // 激活成功，立即暂停（不真播放）
             music.pause();
             music.currentTime = 0;
             audioContextUnlocked = true;
           })
           .catch(err => {
-            console.warn("音频上下文激活失败（非用户直接操作）:", err);
+            console.warn("音频上下文激活失败:", err);
           });
       }
     };
@@ -227,16 +253,15 @@
       document.addEventListener(event, unlockAudio, { once: true, passive: false });
     });
 
-    // ===== 修改：PC端使用鼠标点击三次触发彩蛋 =====
+    // ===== PC端：鼠标点击三次触发彩蛋 =====
     document.addEventListener('click', function(e) {
-      // 排除彩蛋按钮和关闭按钮的点击干扰（可选）
       if (e.target.closest('.easter-egg')) return;
       count++;
       if (count === 3) {
         document.getElementById('egg').style.display = 'flex';
         count = 0;
       } else if (count > 3) {
-        count = 0; // 防误触
+        count = 0;
       }
     });
 
@@ -251,8 +276,6 @@
         count = 0;
       }
     }, { passive: false });
-
-    // 键盘事件：已移除空格触发
 
     // 音乐控制
     const musicButton = document.getElementById('musicToggle');
