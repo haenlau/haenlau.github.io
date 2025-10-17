@@ -50,17 +50,14 @@
       transition: transform 0.1s;
     }
 
-    h1:hover {
-      transform: scale(1.02);
+    /* 呼吸光晕动画 */
+    @keyframes breathe {
+      0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 204, 0.3); }
+      50% { text-shadow: 0 0 20px rgba(0, 255, 204, 0.6); }
     }
 
-    @keyframes jump {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    h1.jump {
-      animation: jump 0.5s ease;
+    h1.breathe {
+      animation: breathe 1.2s ease-in-out;
     }
 
     .tagline {
@@ -222,14 +219,14 @@
 
 <div class="container">
   <h1 id="logo">oAix</h1>
-  <p class="tagline">Where silence speaks</p>
+  <p class="tagline">Where silence speaks.</p>
   <p class="signature">Designed by haen</p>
 </div>
 
 <div class="easter-egg" id="egg">
   <div class="flip-panel">
-    <h2>You heard the silence.</h2>
-    <p>And it spoke to you.</p>
+    <h2 id="eggTitle">You heard the silence.</h2>
+    <p id="eggDesc">And it spoke to you.</p>
     <button id="musicToggle">Play</button>
     <button id="closeEgg">Close</button>
   </div>
@@ -244,7 +241,36 @@
     const music = document.getElementById('backgroundMusic');
     const musicButton = document.getElementById('musicToggle');
     const egg = document.getElementById('egg');
+    const eggTitle = document.getElementById('eggTitle');
+    const eggDesc = document.getElementById('eggDesc');
 
+    // 设置默认音量
+    const originalVolume = 0.7;
+    music.volume = originalVolume;
+
+    // === 巧思：每小时重置“初次见面”状态 ===
+    const VISIT_RESET_INTERVAL = 60 * 60 * 1000; // 1 小时
+    const lastVisit = localStorage.getItem('lastVisit');
+    const now = Date.now();
+    let isFirstInHour = true;
+
+    if (lastVisit) {
+      const elapsed = now - parseInt(lastVisit, 10);
+      if (elapsed < VISIT_RESET_INTERVAL) {
+        isFirstInHour = false;
+      }
+    }
+    localStorage.setItem('lastVisit', now.toString());
+
+    if (isFirstInHour) {
+      eggTitle.textContent = "You heard the silence.";
+      eggDesc.textContent = "And it spoke to you.";
+    } else {
+      eggTitle.textContent = "You're back.";
+      eggDesc.textContent = "The silence missed you.";
+    }
+
+    // === 交互事件 ===
     const triggerEvent = 'onpointerup' in window ? 'pointerup' : ('ontouchstart' in window ? 'touchstart' : 'click');
 
     const handleTripleTap = (e) => {
@@ -252,7 +278,7 @@
       count++;
       if (count === 3) {
         egg.style.display = 'flex';
-        void egg.offsetWidth; // 强制重排以触发动画
+        void egg.offsetWidth;
         egg.classList.remove('closing');
         count = 0;
       } else if (count > 3) {
@@ -262,6 +288,7 @@
 
     document.addEventListener(triggerEvent, handleTripleTap, { passive: false });
 
+    // === 音乐控制 ===
     musicButton.addEventListener('click', function () {
       if (!audioContextUnlocked) {
         const playPromise = music.play();
@@ -286,20 +313,60 @@
       }
     });
 
-    document.getElementById('closeEgg').addEventListener('click', function() {
-      egg.classList.add('closing');
-      setTimeout(() => {
-        egg.style.display = 'none';
-        if (!music.paused) {
-          music.pause();
-          musicButton.textContent = 'Play';
-        }
-      }, 600);
+    // === 页面切换时音乐淡入淡出 ===
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !music.paused) {
+        let vol = music.volume;
+        const fadeOut = setInterval(() => {
+          vol -= 0.05;
+          if (vol <= 0) {
+            vol = 0;
+            clearInterval(fadeOut);
+          }
+          music.volume = vol;
+        }, 100);
+      } else if (!document.hidden && !music.paused) {
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+          vol += 0.05;
+          if (vol >= originalVolume) {
+            vol = originalVolume;
+            clearInterval(fadeIn);
+          }
+          music.volume = vol;
+        }, 100);
+      }
     });
 
+    // === 呼吸光晕 ===
     document.getElementById('logo').addEventListener('click', function() {
-      this.classList.add('jump');
-      setTimeout(() => this.classList.remove('jump'), 500);
+      this.classList.remove('breathe');
+      void this.offsetWidth;
+      this.classList.add('breathe');
+    });
+
+    // === 关闭彩蛋（带音乐渐弱）===
+    document.getElementById('closeEgg').addEventListener('click', function() {
+      egg.classList.add('closing');
+      
+      if (!music.paused) {
+        let vol = music.volume;
+        const fadeOut = setInterval(() => {
+          vol -= 0.05;
+          if (vol <= 0) {
+            vol = 0;
+            music.pause();
+            musicButton.textContent = 'Play';
+            clearInterval(fadeOut);
+          }
+          music.volume = vol;
+        }, 80);
+      }
+
+      setTimeout(() => {
+        egg.style.display = 'none';
+        music.volume = originalVolume;
+      }, 600);
     });
   };
 </script>
