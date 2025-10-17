@@ -193,8 +193,8 @@
 <!-- 背景音乐 -->
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
-<!-- 提示文字 -->
-<div class="space-hint">点击屏幕或敲击空格三次有惊喜</div>
+<!-- 提示文字：已修改 -->
+<div class="space-hint">猛击屏幕</div>
 
 <script>
   // 页面加载完成后初始化功能
@@ -218,7 +218,6 @@
           })
           .catch(err => {
             console.warn("音频上下文激活失败（非用户直接操作）:", err);
-            // 可忽略，等待下次点击
           });
       }
     };
@@ -228,29 +227,32 @@
       document.addEventListener(event, unlockAudio, { once: true, passive: false });
     });
 
-    // 键盘事件：空格触发彩蛋
-    window.addEventListener('keydown', function(e) {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        count++;
-        if (count === 3) {
-          document.getElementById('egg').style.display = 'flex';
-          count = 0;
-        }
-      } else {
+    // ===== 修改：PC端使用鼠标点击三次触发彩蛋 =====
+    document.addEventListener('click', function(e) {
+      // 排除彩蛋按钮和关闭按钮的点击干扰（可选）
+      if (e.target.closest('.easter-egg')) return;
+      count++;
+      if (count === 3) {
+        document.getElementById('egg').style.display = 'flex';
         count = 0;
+      } else if (count > 3) {
+        count = 0; // 防误触
       }
     });
 
-    // 触摸事件：手机端三击触发
+    // ===== 移动端：三击屏幕触发 =====
     window.addEventListener('touchstart', function(e) {
       e.preventDefault();
       count++;
       if (count === 3) {
         document.getElementById('egg').style.display = 'flex';
         count = 0;
+      } else if (count > 3) {
+        count = 0;
       }
     }, { passive: false });
+
+    // 键盘事件：已移除空格触发
 
     // 音乐控制
     const musicButton = document.getElementById('musicToggle');
