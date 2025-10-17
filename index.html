@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>oAix</title>
+  <meta name="description" content="Designed by haen" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: #0a0a0a;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: background 0.8s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body:hover {
+      background: #000a1a;
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 800px;
+      animation: fadeIn 1.2s ease-out;
+      z-index: 10;
+      position: relative;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #00ffcc, #0066ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    h1:hover {
+      transform: scale(1.02);
+    }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    h1.jump {
+      animation: jump 0.5s ease;
+    }
+
+    .tagline {
+      font-size: 1.4rem;
+      color: #aaa;
+      margin: 1rem 0;
+      font-weight: 300;
+      transition: color 0.6s ease, opacity 0.4s ease;
+    }
+
+    .tagline:hover {
+      color: #00ffcc;
+      text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+      opacity: 1;
+    }
+
+    .signature {
+      font-size: 1.2rem;
+      color: #ddd;
+      margin-top: 1.5rem;
+      transition: color 0.4s ease;
+      font-family: "华文行楷", "STXingkai", "STXingkaiTC", "LiHei Pro", "LiSu", cursive;
+      font-weight: normal;
+      letter-spacing: 1px;
+    }
+
+    .signature:hover {
+      color: #00ffcc;
+    }
+
+    .easter-egg {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .easter-egg button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      background: #00ffcc;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .easter-egg button:hover {
+      background: #0066ff;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 统一提示文字，兼容 PC 和手机 */
+    .space-hint {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      font-size: 0.9rem;
+      color: rgba(200, 200, 200, 0.3);
+      transition: color 0.4s ease, opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .space-hint:hover {
+      color: rgba(0, 255, 204, 0.7);
+      opacity: 1;
+    }
+
+    /* 小屏幕适配 */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      .tagline,
+      .signature {
+        font-size: 1.1rem;
+      }
+      .space-hint {
+        font-size: 0.8rem;
+        bottom: 12px;
+        right: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starsCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+
+<div class="container">
+  <h1 id="logo">oAix</h1>
+  <p class="tagline">Think beyond.</p>
+  <p class="signature">Designed by haen</p>
+</div>
+
+<!-- 隐藏彩蛋 -->
+<div class="easter-egg" id="egg">
+  <h2>🎉 恭喜你发现了隐藏内容！</h2>
+  <p>你触发了惊喜彩蛋！</p>
+  <button id="musicToggle">播放</button>
+  <button id="closeEgg">关闭</button>
+</div>
+
+<!-- 背景音乐 -->
+<audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
+
+<!-- 提示文字：统一提示，兼容所有设备 -->
+<div class="space-hint">点击屏幕或敲击空格三次有惊喜</div>
+
+<script>
+  // 完整保留原始星空动画函数
+  function startStars() {
+    const canvas = document.getElementById('starsCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let mouseX = canvas.width / 2, mouseY = canvas.height / 2;
+    canvas.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const stars = [];
+    for (let i = 0; i < 150; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        o: Math.random() * 0.8 + 0.2,
+        s: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    const shootingStars = [];
+    const shootingStarChance = 0.003;
+    const shootingStarSpeed = 8;
+
+    function createShootingStar() {
+      const side = Math.random();
+      let x, y, angle;
+
+      if (side < 0.33) {
+        x = canvas.width + 50;
+        y = Math.random() * canvas.height * 0.7;
+        angle = Math.PI + (Math.random() - 0.5) * 0.5;
+      } else if (side < 0.66) {
+        x = Math.random() * canvas.width;
+        y = -50;
+        angle = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+      } else {
+        x = -50;
+        y = Math.random() * canvas.height * 0.7;
+        angle = (Math.random() - 0.5) * 0.5;
+      }
+
+      return {
+        x: x,
+        y: y,
+        angle: angle,
+        length: Math.random() * 100 + 60,
+        speed: shootingStarSpeed * (0.8 + Math.random() * 0.6),
+        opacity: 1,
+        fadeSpeed: Math.random() * 0.015 + 0.005
+      };
+    }
+
+    function animate() {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach(star => {
+        star.y += star.s;
+        if (star.y > canvas.height) star.y = 0;
+
+        const dx = star.x - mouseX;
+        const dy = star.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const maxDist = 150;
+        let opacity = star.o;
+        if (dist < maxDist) {
+          opacity = Math.min(1, star.o + (1 - dist/maxDist) * 0.6);
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+        ctx.fill();
+      });
+
+      if (Math.random() < shootingStarChance) {
+        shootingStars.push(createShootingStar());
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const star = shootingStars[i];
+        const endX = star.x + Math.cos(star.angle) * star.length;
+        const endY = star.y + Math.sin(star.angle) * star.length;
+        const gradient = ctx.createLinearGradient(star.x, star.y, endX, endY);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = gradient;
+        ctx.moveTo(star.x, star.y);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        star.x += Math.cos(star.angle) * star.speed;
+        star.y += Math.sin(star.angle) * star.speed;
+        star.opacity -= star.fadeSpeed;
+
+        if (star.opacity <= 0 || star.x < -100 || star.x > canvas.width + 100 || star.y > canvas.height + 100) {
+          shootingStars.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  // 初始化与事件绑定
+  window.onload = function() {
+    startStars(); // 星空动画已恢复
+
+    let count = 0;
+
+    // 统一处理 PC 和手机
+    window.addEventListener('keydown', function(e) {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        count++;
+        if (count === 3) {
+          document.getElementById('egg').style.display = 'flex';
+          count = 0;
+        }
+      } else {
+        count = 0;
+      }
+    });
+
+    window.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      count++;
+      if (count === 3) {
+        document.getElementById('egg').style.display = 'flex';
+        count = 0;
+      }
+    }, { passive: false });
+
+    const music = document.getElementById('backgroundMusic');
+    const musicButton = document.getElementById('musicToggle');
+
+    musicButton.addEventListener('click', function () {
+      if (music.paused) {
+        music.play().then(() => {
+          musicButton.textContent = '暂停';
+        }).catch(() => {
+          alert("播放失败，请重试。");
+        });
+      } else {
+        music.pause();
+        musicButton.textContent = '播放';
+      }
+    });
+
+    document.getElementById('closeEgg').addEventListener('click', function() {
+      document.getElementById('egg').style.display = 'none';
+      if (!music.paused) {
+        music.pause();
+        musicButton.textContent = '播放';
+      }
+    });
+
+    const logo = document.getElementById('logo');
+    logo.addEventListener('click', function() {
+      this.classList.add('jump');
+      setTimeout(() => this.classList.remove('jump'), 500);
+    });
+  };
+</script>
+</body>
+</html>
