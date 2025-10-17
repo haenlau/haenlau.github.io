@@ -6,7 +6,7 @@
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
 
-  <!-- 预加载关键字体（woff2），提升加载速度 -->
+  <!-- 预加载关键字体 -->
   <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <style>
@@ -17,8 +17,8 @@
     }
 
     body {
-      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-      background: #000000; /* 纯黑背景 */
+      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, system-ui, sans-serif;
+      background: #000000;
       color: #f5f5f5;
       min-height: 100vh;
       display: flex;
@@ -65,7 +65,7 @@
 
     .tagline {
       font-size: 1.4rem;
-      color: #aaa;
+      color: #ccc; /* 提升对比度 */
       margin: 1rem 0;
       font-weight: 300;
       transition: color 0.6s ease, opacity 0.4s ease;
@@ -77,7 +77,6 @@
       opacity: 1;
     }
 
-    /* 字体引入：霞鹜文楷（使用本地 woff2） */
     @font-face {
       font-family: 'LXGW WenKai';
       src: url('./fonts/LXGWWenKai-Regular.woff2') format('woff2');
@@ -91,7 +90,7 @@
       color: #ddd;
       margin-top: 1.5rem;
       transition: color 0.4s ease;
-      font-family: 'LXGW WenKai', '华文行楷', 'STXingkai', 'STXingkaiTC', 'LiHei Pro', 'LiSu', cursive, sans-serif;
+      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, sans-serif;
       font-weight: normal;
       letter-spacing: 1px;
     }
@@ -120,6 +119,12 @@
       gap: 1.5rem;
     }
 
+    .easter-egg h2,
+    .easter-egg p {
+      font-family: 'LXGW WenKai', 'STKaiti', 'KaiTi', '华文行楷', cursive, sans-serif;
+      font-weight: normal;
+    }
+
     .easter-egg h2 {
       font-size: 2rem;
       margin: 0;
@@ -127,7 +132,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-weight: bold;
+      font-weight: normal;
     }
 
     .easter-egg p {
@@ -162,22 +167,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .space-hint {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      font-size: 0.9rem;
-      color: rgba(200, 200, 200, 0.3);
-      transition: color 0.4s ease, opacity 0.4s ease;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    .space-hint:hover {
-      color: rgba(0, 255, 204, 0.7);
-      opacity: 1;
-    }
-
     @media (max-width: 600px) {
       h1 {
         font-size: 2.5rem;
@@ -185,11 +174,6 @@
       .tagline,
       .signature {
         font-size: 1.1rem;
-      }
-      .space-hint {
-        font-size: 0.8rem;
-        bottom: 12px;
-        right: 12px;
       }
       .easter-egg h2 {
         font-size: 1.8rem;
@@ -209,7 +193,6 @@
   <p class="signature">Designed by haen</p>
 </div>
 
-<!-- 隐藏彩蛋 -->
 <div class="easter-egg" id="egg">
   <h2>你发现了隐藏内容</h2>
   <p>触发了彩蛋</p>
@@ -217,44 +200,19 @@
   <button id="closeEgg">关闭</button>
 </div>
 
-<!-- 背景音乐 -->
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
-<!-- 提示文字：暂留空 -->
-<div class="space-hint"></div>
-
 <script>
-  // 页面加载完成后初始化功能
   window.onload = function() {
     let count = 0;
     let audioContextUnlocked = false;
     const music = document.getElementById('backgroundMusic');
+    const musicButton = document.getElementById('musicToggle');
 
-    // ===== 核心：用首次点击/触摸激活音频上下文 =====
-    const unlockAudio = () => {
-      if (audioContextUnlocked) return;
-      
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            music.pause();
-            music.currentTime = 0;
-            audioContextUnlocked = true;
-          })
-          .catch(err => {
-            console.warn("音频上下文激活失败:", err);
-          });
-      }
-    };
+    // 统一使用 pointerup（兼容触屏和鼠标）
+    const triggerEvent = 'onpointerup' in window ? 'pointerup' : ('ontouchstart' in window ? 'touchstart' : 'click');
 
-    // 绑定到首次点击或触摸（自动解锁）
-    ['touchstart', 'click'].forEach(event => {
-      document.addEventListener(event, unlockAudio, { once: true, passive: false });
-    });
-
-    // ===== PC端：鼠标点击三次触发彩蛋 =====
-    document.addEventListener('click', function(e) {
+    const handleTripleTap = (e) => {
       if (e.target.closest('.easter-egg')) return;
       count++;
       if (count === 3) {
@@ -263,35 +221,32 @@
       } else if (count > 3) {
         count = 0;
       }
-    });
+    };
 
-    // ===== 移动端：三击屏幕触发 =====
-    window.addEventListener('touchstart', function(e) {
-      e.preventDefault();
-      count++;
-      if (count === 3) {
-        document.getElementById('egg').style.display = 'flex';
-        count = 0;
-      } else if (count > 3) {
-        count = 0;
-      }
-    }, { passive: false });
+    document.addEventListener(triggerEvent, handleTripleTap, { passive: false });
 
     // 音乐控制
-    const musicButton = document.getElementById('musicToggle');
-
     musicButton.addEventListener('click', function () {
-      if (music.paused) {
-        music.play()
-          .then(() => {
-            musicButton.textContent = '暂停';
-          })
-          .catch(() => {
-            alert("播放失败，请重试。\n请确保已点击过屏幕以启用声音。");
-          });
+      if (!audioContextUnlocked) {
+        const playPromise = music.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              audioContextUnlocked = true;
+              musicButton.textContent = '暂停';
+            })
+            .catch(() => {
+              console.warn("音频播放被阻止，请确保已与页面交互。");
+            });
+        }
       } else {
-        music.pause();
-        musicButton.textContent = '播放';
+        if (music.paused) {
+          music.play();
+          musicButton.textContent = '暂停';
+        } else {
+          music.pause();
+          musicButton.textContent = '播放';
+        }
       }
     });
 
@@ -304,9 +259,8 @@
       }
     });
 
-    // Logo 点击跳动动画
-    const logo = document.getElementById('logo');
-    logo.addEventListener('click', function() {
+    // Logo 跳动动画
+    document.getElementById('logo').addEventListener('click', function() {
       this.classList.add('jump');
       setTimeout(() => this.classList.remove('jump'), 500);
     });
