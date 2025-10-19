@@ -19,6 +19,23 @@
     @font-face{font-family:'LXGW WenKai';src:url('./fonts/LXGWWenKai-Regular.woff2') format('woff2');font-weight:normal;font-style:normal;font-display:swap}
     .signature{font-size:1.2rem;color:#ddd;margin-top:1.5rem;transition:color .4s ease;font-family:var(--font);letter-spacing:1px}
     .signature:hover{color:#00ffcc}
+
+    /* ✨ 新增：For you 文字样式 */
+    #for-you {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      font-size: 0.95rem;
+      color: #666;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #for-you.show {
+      opacity: 1;
+    }
+
     .easter-egg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(10px);z-index:100;justify-content:center;align-items:center;flex-direction:column;color:#fff;font-size:1.5rem;text-align:center;padding:2rem;gap:1.5rem;perspective:1000px}
     .flip-panel{transform-style:preserve-3d;animation:flipIn .6s cubic-bezier(.34,1.56,.64,1) forwards}
     .easter-egg.closing .flip-panel{animation:flipOut .6s cubic-bezier(.34,1.56,.64,1) forwards}
@@ -44,6 +61,9 @@
   <p class="tagline">Where silence speaks</p>
   <p class="signature">Designed by haen</p>
 </div>
+
+<div id="for-you">For you, who reads silence.</div>
+
 <div class="easter-egg" id="egg">
   <div class="flip-panel">
     <h2 id="eggTitle">You heard the silence</h2>
@@ -56,6 +76,10 @@
 <audio id="backgroundMusic" src="files/music.mp3" preload="auto"></audio>
 
 <script>
+// 补全缺失的 DOM 引用（避免报错）
+const logo = document.getElementById('logo');
+const closeEgg = document.getElementById('closeEgg');
+
 const originalVolume = 0.7;
 let tapCount = 0;
 let audioUnlocked = false;
@@ -66,6 +90,7 @@ const btnMusic = document.getElementById('musicToggle');
 const egg = document.getElementById('egg');
 const title = document.getElementById('eggTitle');
 const desc = document.getElementById('eggDesc');
+const forYou = document.getElementById('for-you'); //  新增引用
 
 btnMusic.textContent = 'Play';
 
@@ -76,6 +101,25 @@ if (last && (now - Number(last)) < 3600000) {
   desc.textContent = "The silence missed you";
 }
 localStorage.setItem('lastVisit', now.toString());
+
+// 检查是否在 22:00 - 00:00 之间
+function showForYouIfNeeded() {
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  // 23:00 到 23:59
+  if (hour === 22) {
+    forYou.classList.add('show');
+  } else {
+    forYou.classList.remove('show');
+  }
+}
+
+// 页面加载时检查一次
+showForYouIfNeeded();
+
+// 每分钟检查一次（确保跨小时也能更新）
+setInterval(showForYouIfNeeded, 60000);
 
 document.addEventListener('click', e => {
   if (e.target.closest('.easter-egg')) return;
