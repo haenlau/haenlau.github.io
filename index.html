@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>oAix</title>
   <meta name="description" content="Designed by haen" />
+
+  <!-- ✅ 极简 favicon：仅一个大写 "X"，黑底 + 青蓝字，Base64 SVG 内联 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23000%22/><text x=%2250%22 y=%2265%22 text-anchor=%22middle%22 font-size=%2248%22 fill=%22%2300ffcc%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22>iA</text></svg>" type="image/svg+xml">
   <link rel="preload" href="./fonts/LXGWWenKai-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -20,7 +23,7 @@
     .signature{font-size:1.2rem;color:#ddd;margin-top:1.5rem;transition:color .4s ease;font-family:var(--font);letter-spacing:1px}
     .signature:hover{color:#00ffcc}
 
-    /* ✨ 新增：For you 文字样式 */
+    /* ✨ For you 文字样式 */
     #for-you {
       position: fixed;
       bottom: 12px;
@@ -90,7 +93,7 @@ const btnMusic = document.getElementById('musicToggle');
 const egg = document.getElementById('egg');
 const title = document.getElementById('eggTitle');
 const desc = document.getElementById('eggDesc');
-const forYou = document.getElementById('for-you'); //  新增引用
+const forYou = document.getElementById('for-you');
 
 btnMusic.textContent = 'Play';
 
@@ -102,12 +105,10 @@ if (last && (now - Number(last)) < 3600000) {
 }
 localStorage.setItem('lastVisit', now.toString());
 
-// 检查是否在 22:00 - 00:00 之间
+// 检查是否在 22:00 - 23:59 之间（你原逻辑是 hour === 22）
 function showForYouIfNeeded() {
   const now = new Date();
   const hour = now.getHours();
-  const minute = now.getMinutes();
-  // 23:00 到 23:59
   if (hour === 22) {
     forYou.classList.add('show');
   } else {
@@ -115,10 +116,7 @@ function showForYouIfNeeded() {
   }
 }
 
-// 页面加载时检查一次
 showForYouIfNeeded();
-
-// 每分钟检查一次（确保跨小时也能更新）
 setInterval(showForYouIfNeeded, 60000);
 
 document.addEventListener('click', e => {
